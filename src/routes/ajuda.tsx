@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, ShieldCheck } from "lucide-react";
-import { elaineLogo } from "@/components/app/Brand";
+import { brandLogo, ElaineSignature } from "@/components/app/Brand";
 import { FooterNote } from "@/components/app/Common";
 
 export const Route = createFileRoute("/ajuda")({
@@ -67,16 +67,16 @@ function HelpPage() {
     <div className="page page--narrow">
       <header
         className="panel panel--soft"
-        style={{ display: "flex", gap: 18, alignItems: "center" }}
+        style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}
       >
         <img
-          src={elaineLogo}
-          alt="Monograma da Elaine"
-          width={56}
-          height={81}
-          style={{ flexShrink: 0 }}
+          src={brandLogo}
+          alt="Respostas do Nutri"
+          width={120}
+          height={120}
+          style={{ flexShrink: 0, borderRadius: 16 }}
         />
-        <div>
+        <div style={{ flex: "1 1 260px" }}>
           <p className="eyebrow">Ajuda e instruções</p>
           <h1 className="page-title">Como usar o Respostas do Nutri</h1>
           <p className="page-lead" style={{ marginTop: 4 }}>
@@ -140,6 +140,9 @@ function HelpPage() {
           exponha informações clínicas.
         </span>
       </p>
+      <div className="panel" style={{ marginTop: 16 }}>
+        <ElaineSignature text="Mensagens escritas com curadoria de" />
+      </div>
       <FooterNote />
     </div>
   );
