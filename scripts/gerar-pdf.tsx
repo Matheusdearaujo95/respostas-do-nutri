@@ -20,7 +20,7 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ArrowUp, ShieldAlert } from "lucide-react";
+import { ArrowUp, MousePointerClick, ShieldAlert } from "lucide-react";
 import { PDFDocument, rgb } from "pdf-lib";
 import { chromium } from "playwright-core";
 import { fieldLabel, splitText } from "../src/lib/biblioteca/campos";
@@ -93,8 +93,24 @@ const howTo = `
     <li><b>Copie e complete.</b> Selecione o texto, copie e cole no WhatsApp, e-mail ou no canal que preferir. Troque os campos em destaque, como <span class="f">[Nome]</span> e <span class="f">[Valor]</span>, pelos dados reais.</li>
     <li><b>Revise antes de enviar.</b> Mensagens com o selo <span class="badge">${icon(ShieldAlert, 11)} Conferir dados</span> trazem valores, datas ou condições: confira tudo antes do envio.</li>
   </ol>
-  <div class="note">
-    <p><b>Em todas as páginas</b> há atalhos para voltar ao sumário, à categoria ou ao índice. No celular, os marcadores do leitor de PDF também levam a cada categoria.</p>
+  <div class="nav-help">
+    <p class="nav-help__title">${icon(MousePointerClick, 18)} Este PDF é clicável</p>
+    <p class="nav-help__lead">Diferente de um PDF comum, aqui você não precisa rolar página por página. Toque ou clique nos itens abaixo e o guia leva você direto ao lugar certo.</p>
+    <div class="nav-help__grid">
+      <div class="nav-help__item">
+        <a class="toc__item nav-help__sample" href="#${catAnchor(categories[0]!)}"><span class="toc__icon">${icon(categories[0]!.icon, 16)}</span><span class="toc__body"><b>01 · ${esc(categories[0]!.name)}</b></span></a>
+        <p><b>No sumário,</b> toque em uma categoria para abrir a lista de mensagens dela.</p>
+      </div>
+      <div class="nav-help__item">
+        <a class="nav-help__sample nav-help__row" href="#${anchor(messages[0]!)}"><span class="id">01.01</span> ${esc(messages[0]!.title)}</a>
+        <p><b>Na lista da categoria e no índice,</b> toque no nome da mensagem para ir direto a ela.</p>
+      </div>
+      <div class="nav-help__item">
+        <nav class="back nav-help__sample"><a href="#sumario">${icon(ArrowUp, 12)} Sumário</a><a href="#indice">${icon(ArrowUp, 12)} Índice por situação</a></nav>
+        <p><b>No fim de cada mensagem,</b> estes botões levam de volta ao sumário, à categoria ou ao índice.</p>
+      </div>
+    </div>
+    <p class="nav-help__tip">Dica: abra no leitor de PDF do celular ou do computador (Adobe Reader, Preview, Chrome). Os marcadores do leitor também mostram todas as categorias.</p>
   </div>
   <div class="note note--soft">
     <p>As mensagens são modelos editáveis e devem ser revisadas e adaptadas pela nutricionista antes do envio. Elas não contêm prescrições, doses ou promessas de resultado e não substituem a avaliação profissional. Não envie mensagens a quem pediu para não ser contatado e não exponha informações de saúde de pacientes.</p>
@@ -234,6 +250,21 @@ svg { display: inline-block; vertical-align: -2px; }
 .steps li::before { content: counter(s); position: absolute; left: 4.5mm; top: 4mm; width: 7mm; height: 7mm; border-radius: 99px; background: var(--olive); color: #fff; font-weight: 700; font-size: 9pt; display: grid; place-items: center; }
 .steps a { color: var(--olive); font-weight: 700; text-decoration: underline; }
 .note { margin-top: 6mm; padding: 4mm 5mm; border-radius: 4mm; background: var(--olive-tint); border: 1px solid var(--olive-line); color: var(--olive-deep); }
+.nav-help { margin-top: 6mm; padding: 5mm; border-radius: 4mm; background: var(--olive-tint); border: 1px solid var(--olive-line); }
+.nav-help__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 14pt; color: var(--apricot-dark); display: flex; align-items: center; gap: 2mm; }
+.nav-help__title svg { color: var(--apricot); }
+.nav-help__lead { color: var(--olive-deep); margin-top: 1.5mm; }
+.nav-help__grid { display: grid; gap: 3mm; margin-top: 4mm; }
+.nav-help__item { display: grid; grid-template-columns: 72mm 1fr; gap: 4mm; align-items: center; }
+.nav-help__item p { font-size: 9.5pt; color: var(--ink2); }
+.nav-help__sample { margin: 0; box-shadow: 0 0 0 .8mm var(--apricot-tint); border-color: var(--apricot) !important; }
+.nav-help__sample.back { box-shadow: none; flex-wrap: nowrap; gap: 1.5mm; }
+.nav-help__sample.back a { border-color: var(--apricot); box-shadow: 0 0 0 .8mm var(--apricot-tint); }
+.nav-help .toc__item { padding: 1.8mm 3mm; }
+.nav-help .toc__body b { font-size: 10pt; }
+.nav-help__row { display: flex; align-items: center; gap: 2mm; background: var(--panel); border: 1px solid; border-radius: 2.5mm; padding: 2mm 3mm; font-weight: 600; font-size: 9.5pt; }
+.nav-help__row .id { font-variant-numeric: tabular-nums; color: var(--olive); font-weight: 700; font-size: 8.5pt; background: var(--olive-tint); border-radius: 1.2mm; padding: .3mm 1.6mm; }
+.nav-help__tip { margin-top: 4mm; font-size: 9pt; color: var(--olive-deep); }
 .note--soft { background: var(--bg); color: var(--ink2); border-color: var(--line2); font-size: 9.5pt; }
 
 /* Campos e selos */
