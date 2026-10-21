@@ -21,6 +21,7 @@ import { pathToFileURL } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ArrowUp, ShieldAlert } from "lucide-react";
+import { PDFDocument, rgb } from "pdf-lib";
 import { chromium } from "playwright-core";
 import { fieldLabel, splitText } from "../src/lib/biblioteca/campos";
 import { categories, type Category } from "../src/lib/biblioteca/categorias";
@@ -69,17 +70,35 @@ const backLinks = (category: Category) => `
     <a href="#indice">${icon(ArrowUp, 12)} Índice por situação</a>
   </nav>`;
 
+const coverBubbles = [
+  { side: "in", text: "Oi! Gostaria de saber como funciona o atendimento." },
+  {
+    side: "out",
+    text: "Oi, [Nome]! Que bom receber sua mensagem. Vou explicar tudo com calma por aqui.",
+  },
+  { side: "in", text: "Perfeito! Já vou separar meus horários." },
+];
+
 const cover = `
-<section class="cover page">
+<section class="cover">
+  <span class="cover__blob cover__blob--a"></span>
+  <span class="cover__blob cover__blob--b"></span>
+  <p class="eyebrow cover__eyebrow">Acervo do Nutri · Biblioteca prática</p>
   <img class="cover__logo" src="${file("public/brand/respostas-do-nutri-simbolo.svg")}" alt="">
-  <p class="eyebrow">Acervo do Nutri · Biblioteca prática</p>
-  <p class="cover__title">Respostas<br><em>do Nutri</em><i>.</i></p>
+  <p class="cover__title">Respostas <em>do Nutri</em><i>.</i></p>
   <p class="cover__lead">Suas mensagens prontas, em um só lugar. Encontre a mensagem certa, personalize e envie em segundos.</p>
-  <p class="cover__count">${messages.length} mensagens · ${categories.length} momentos do atendimento</p>
-  <div class="cover__foot">
-    <span>Curadoria e conteúdo</span>
-    <img src="${file("public/brand/elaine-araujo-nutricionista.svg")}" alt="Elaine Araújo, nutricionista">
+  <div class="cover__chat">
+    ${coverBubbles
+      .map(
+        (bubble) =>
+          `<p class="cover__bubble cover__bubble--${bubble.side}">${messageText(bubble.text).replace(/<\/?p>/g, "")}</p>`,
+      )
+      .join("")}
   </div>
+  <ul class="cover__moments">
+    ${categories.map((category) => `<li>${icon(category.icon, 12)} ${esc(category.short)}</li>`).join("")}
+  </ul>
+  <img class="cover__elaine" src="${file("public/brand/elaine-araujo-nutricionista.svg")}" alt="Elaine Araújo, nutricionista">
 </section>`;
 
 const howTo = `
@@ -127,12 +146,12 @@ const sections = byCategory
     ({ category, items }) => `
 <section class="category page" id="${catAnchor(category)}">
   <header class="cat-head">
-    <span class="cat-head__icon">${icon(category.icon, 30)}</span>
-    <div>
-      <p class="eyebrow">Categoria ${category.id} · ${items.length} mensagens</p>
-      <h2 class="h2">${esc(category.name)}</h2>
-      <p class="lead">${esc(category.description)}</p>
-    </div>
+    <span class="cat-head__num" aria-hidden="true">${category.id}</span>
+    <span class="cat-head__icon">${icon(category.icon, 34)}</span>
+    <p class="eyebrow">Categoria ${category.id} · ${items.length} mensagens</p>
+    <h2 class="h2">${esc(category.name)}</h2>
+    <span class="cat-head__rule"></span>
+    <p class="lead">${esc(category.description)}</p>
   </header>
   <ol class="cat-index">
     ${items
@@ -212,17 +231,27 @@ b { font-weight: 700; }
 .bookmark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 svg { display: inline-block; vertical-align: -2px; }
 
-/* Capa */
-.cover { height: 257mm; display: flex; flex-direction: column; justify-content: center; padding: 0 6mm; position: relative; }
-.cover__logo { width: 34mm; margin-bottom: 14mm; }
-.cover__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 54pt; line-height: 1; letter-spacing: -.03em; margin-top: 6mm; }
+/* Capa (página inteira, sem margem nem rodapé) */
+@page :first { margin: 0; }
+.cover { height: 297mm; break-after: page; position: relative; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22mm 24mm 16mm; }
+.cover__blob { position: absolute; border-radius: 50%; }
+.cover__blob--a { width: 150mm; height: 150mm; right: -60mm; top: -55mm; background: var(--olive-tint); }
+.cover__blob--b { width: 90mm; height: 90mm; left: -40mm; bottom: 40mm; background: var(--apricot-tint); opacity: .7; }
+.cover > *:not(.cover__blob) { position: relative; }
+.cover__logo { width: 30mm; margin-top: 12mm; }
+.cover__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 50pt; line-height: 1; letter-spacing: -.03em; margin-top: 7mm; }
 .cover__title em { font-style: normal; color: var(--olive); }
 .cover__title i { font-style: normal; color: var(--apricot); }
-.cover__lead { font-size: 14pt; color: var(--ink2); max-width: 120mm; margin-top: 8mm; }
-.cover__count { margin-top: 8mm; display: inline-block; align-self: flex-start; background: var(--olive-tint); color: var(--olive-deep); font-weight: 700; padding: 3mm 5mm; border-radius: 99px; font-size: 10.5pt; }
-.cover__foot { position: absolute; bottom: 0; left: 6mm; display: flex; flex-direction: column; gap: 1mm; }
-.cover__foot span { font-size: 7.5pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); }
-.cover__foot img { width: 42mm; }
+.cover__lead { font-size: 13pt; color: var(--ink2); max-width: 125mm; margin-top: 5mm; }
+.cover__chat { width: 128mm; margin-top: 11mm; padding: 7mm 7mm 6mm; background: var(--panel); border: 1px solid var(--olive-line); border-radius: 7mm; box-shadow: 0 3mm 8mm rgba(44,65,40,.08); display: flex; flex-direction: column; gap: 3mm; text-align: left; }
+.cover__bubble { max-width: 82%; padding: 2.6mm 4mm; font-size: 10pt; line-height: 1.45; }
+.cover__bubble--in { align-self: flex-start; background: var(--bg); border: 1px solid var(--line2); border-radius: 1.5mm 4.5mm 4.5mm 4.5mm; }
+.cover__bubble--out { align-self: flex-end; background: var(--olive); color: #fff; border-radius: 4.5mm 1.5mm 4.5mm 4.5mm; }
+.cover__bubble--out .f { background: rgba(255,255,255,.18); color: #fff; }
+.cover__moments { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 2mm; max-width: 150mm; margin-top: 11mm; }
+.cover__moments li { display: inline-flex; align-items: center; gap: 1.2mm; font-size: 8.5pt; font-weight: 600; color: var(--olive-deep); background: var(--panel); border: 1px solid var(--olive-line); border-radius: 99px; padding: 1.2mm 3mm; }
+.cover__moments svg { color: var(--apricot); vertical-align: 0; }
+.cover__elaine { width: 24mm; margin-top: auto; }
 
 /* Como usar */
 .steps { counter-reset: s; list-style: none; margin-top: 10mm; display: grid; gap: 4mm; }
@@ -247,8 +276,13 @@ svg { display: inline-block; vertical-align: -2px; }
 .toc__item--index .toc__icon { background: var(--apricot-tint); color: var(--apricot-dark); }
 
 /* Abertura de categoria */
-.cat-head { display: flex; gap: 6mm; align-items: flex-start; padding: 8mm; border-radius: 6mm; background: var(--olive-tint); }
-.cat-head__icon { width: 16mm; height: 16mm; border-radius: 4mm; background: var(--panel); color: var(--olive); display: grid; place-items: center; flex-shrink: 0; }
+.cat-head { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10mm 12mm 9mm; border-radius: 6mm; background: var(--olive-tint); border: 1px solid var(--olive-line); }
+.cat-head > *:not(.cat-head__num) { position: relative; }
+.cat-head__num { position: absolute; right: 7mm; top: 4mm; font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 64pt; line-height: 1; color: #fff; opacity: .9; }
+.cat-head__icon { width: 21mm; height: 21mm; border-radius: 50%; background: var(--panel); color: var(--olive); display: grid; place-items: center; margin-bottom: 5mm; box-shadow: 0 0 0 2.5mm rgba(255,255,255,.5); }
+.cat-head__icon::after { content: ""; position: absolute; right: .6mm; top: .6mm; width: 4mm; height: 4mm; border-radius: 50%; background: var(--apricot); border: 1mm solid var(--olive-tint); }
+.cat-head__rule { width: 12mm; height: 1.2mm; border-radius: 99px; background: var(--apricot); margin-top: 4mm; }
+.cat-head .lead { max-width: 130mm; margin-top: 4mm; }
 .cat-index { list-style: none; margin-top: 7mm; columns: 1; }
 .cat-index li { border-bottom: 1px solid var(--line2); }
 .cat-index a { display: flex; align-items: center; gap: 3mm; padding: 2.6mm 1mm; font-weight: 600; }
@@ -260,8 +294,8 @@ svg { display: inline-block; vertical-align: -2px; }
 .msg:last-of-type { border-bottom: none; }
 .msg__head { break-after: avoid; break-inside: avoid; }
 .msg__meta { font-size: 8.5pt; color: var(--ink3); display: flex; align-items: center; gap: 2mm; }
-.msg__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 15pt; line-height: 1.2; margin-top: 1.5mm; letter-spacing: -.01em; }
-.msg__context { color: var(--ink2); font-size: 9.5pt; margin-top: 1.5mm; }
+.msg__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20pt; line-height: 1.15; margin-top: 2mm; letter-spacing: -.015em; color: var(--apricot-dark); padding-left: 4mm; border-left: 1.4mm solid var(--apricot); }
+.msg__context { color: var(--ink2); font-size: 9.5pt; margin-top: 2.5mm; }
 .variant { margin-top: 4mm; break-inside: avoid; }
 .variant__tone { font-size: 7.5pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--olive); margin-bottom: 1.5mm; }
 .bubble { background: var(--bg); border: 1px solid var(--olive-line); border-radius: 1.5mm 5mm 5mm 5mm; padding: 3.5mm 4.5mm; font-size: 10.5pt; line-height: 1.55; }
@@ -290,6 +324,18 @@ const executablePath =
   (existsSync("/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
     ? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
     : undefined);
+// O rodapé é renderizado à parte pelo Chromium e não carrega arquivos: o símbolo vai embutido.
+const symbol = readFileSync(join(root, "public/brand/respostas-do-nutri-simbolo.svg"), "utf8")
+  .replace(/^<svg /, '<svg style="width:6mm;height:6mm;display:block" ')
+  .replace(/ (width|height)="152"/g, "");
+const footerTemplate = `
+<div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;gap:3mm;font-family:sans-serif;-webkit-print-color-adjust:exact">
+  <span style="flex:1;height:0;border-top:.6pt solid #c6d3bc"></span>
+  ${symbol}
+  <span style="min-width:7mm;height:5mm;padding:0 1.6mm;border-radius:99px;background:#e8562f;color:#fff;font-size:7.5pt;font-weight:700;display:flex;align-items:center;justify-content:center" class="pageNumber"></span>
+  <span style="flex:1;height:0;border-top:.6pt solid #c6d3bc"></span>
+</div>`;
+
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const page = await browser.newPage();
 await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "load" });
@@ -303,9 +349,21 @@ await page.pdf({
   tagged: true,
   displayHeaderFooter: true,
   headerTemplate: "<span></span>",
-  footerTemplate: `<div style="width:100%;font-family:sans-serif;font-size:7.5pt;color:#7d8777;padding:0 16mm;display:flex;justify-content:space-between"><span>Respostas do Nutri · Curadoria Elaine Araújo</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`,
+  footerTemplate,
   margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" },
 });
 await browser.close();
+
+// O Chromium põe o rodapé em todas as páginas; na capa ele é coberto com a cor de fundo.
+const pdf = await PDFDocument.load(readFileSync(pdfPath));
+const coverPage = pdf.getPage(0);
+coverPage.drawRectangle({
+  x: 0,
+  y: 0,
+  width: coverPage.getWidth(),
+  height: 38,
+  color: rgb(0xfa / 255, 0xf9 / 255, 0xf3 / 255),
+});
+writeFileSync(pdfPath, await pdf.save({ useObjectStreams: false }));
 if (!keepHtml) unlinkSync(htmlPath);
 console.log(`PDF gerado: ${pdfPath} (${messages.length} mensagens)`);
