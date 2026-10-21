@@ -1,6 +1,6 @@
 export const identity = {
   name: "Respostas prontas da Nutri",
-  subtitle: "240 mensagens para facilitar sua comunicação com pacientes.",
+  subtitle: "Mensagens para facilitar sua comunicação com pacientes.",
   version: "Direção visual 01",
   fonts: { display: "Bricolage Grotesque", body: "Figtree" },
   palette: [

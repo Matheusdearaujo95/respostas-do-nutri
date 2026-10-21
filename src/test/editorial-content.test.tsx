@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EditorialStudio } from "../components/editorial/EditorialStudio";
-import { ContentEditor } from "../components/editorial/ContentEditor";
+import { ContentEditor as Editor } from "../components/editorial/ContentEditor";
+import { LibraryProvider } from "../components/editorial/LibraryProvider";
+const ContentEditor = () => <LibraryProvider><Editor /></LibraryProvider>;
 import { initialSituations, tones } from "../lib/editorial/content";
 import { checkLibrary, createLibrary, libraryCategories, libraryStorageKey, parseLibrary, serializeLibrary } from "../lib/editorial/library";
 
@@ -57,8 +59,9 @@ describe("Fonte editorial completa", () => {
 });
 
 describe("Biblioteca, edição e armazenamento local", () => {
-  it("abre a etapa 2 e permite editar os três tons sem alterar IDs", () => {
+  it("abre a edição e permite editar os três tons sem alterar IDs", () => {
     render(<EditorialStudio />);
+    fireEvent.click(screen.getByRole("button", { name: "Conteúdo e edição" }));
     expect(screen.getByRole("heading", { name: "Cada conversa, um cuidado." })).toBeInTheDocument();
     expect(screen.getByLabelText("A · Profissional")).toBeInTheDocument();
     expect(screen.getByLabelText("B · Próxima")).toBeInTheDocument();

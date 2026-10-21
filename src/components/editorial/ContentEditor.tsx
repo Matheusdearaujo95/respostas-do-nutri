@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { ArrowDownToLine, ArrowLeft, ArrowRight, CheckCircle2, Copy, FileUp, Search } from "lucide-react";
 import { tones, type Situation, type Tone } from "../../lib/editorial/content";
-import { checkLibrary, createLibrary, downloadBackup, libraryCategories, libraryStorageKey, parseLibrary, personalizedFields, type Library } from "../../lib/editorial/library";
+import { checkLibrary, downloadBackup, libraryCategories, parseLibrary, personalizedFields } from "../../lib/editorial/library";
+import { useLibrary } from "./LibraryProvider";
 import "./content-editor.css";
 
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -10,10 +11,7 @@ function HighlightedText({ text }: { text: string }) {
 }
 
 export function ContentEditor() {
-  const [library, setLibrary] = useState<Library>(createLibrary);
-  const [ready, setReady] = useState(false);
-  const [storageBlocked, setStorageBlocked] = useState(false);
-  const [saveStatus, setSaveStatus] = useState("Carregando conteúdo local…");
+  const { library, ready, storageBlocked, saveStatus, persist } = useLibrary();
   const [categoryId, setCategoryId] = useState("01");
   const [selectedId, setSelectedId] = useState("01.01");
   const [query, setQuery] = useState("");
@@ -23,34 +21,10 @@ export function ContentEditor() {
   const [notice, setNotice] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(libraryStorageKey);
-      if (stored) setLibrary(parseLibrary(stored));
-      setSaveStatus(stored ? "Conteúdo recuperado deste navegador." : "Textos-base carregados. Alterações serão salvas neste navegador.");
-    } catch {
-      setStorageBlocked(true);
-      setSaveStatus("Não foi possível ler o armazenamento. Os textos-base estão em memória; o conteúdo local anterior não será sobrescrito. Baixe um backup de suas alterações.");
-    }
-    setReady(true);
-  }, []);
-  useEffect(() => {
     if (!notice) return;
     const timer = setTimeout(() => setNotice(""), 6000);
     return () => clearTimeout(timer);
   }, [notice]);
-
-  const persist = (next: Library, replaceBlocked = false) => {
-    setLibrary(next);
-    if (storageBlocked && !replaceBlocked) return;
-    try {
-      localStorage.setItem(libraryStorageKey, JSON.stringify(next));
-      setStorageBlocked(false);
-      setSaveStatus("Alterações salvas neste navegador. Faça um backup para guardar fora dele.");
-    } catch {
-      setSaveStatus("Não foi possível salvar no navegador. As alterações estão em memória: baixe o backup JSON antes de sair.");
-      setStorageBlocked(true);
-    }
-  };
   const issues = checkLibrary(library);
   const issueIds = new Set(issues.map(item => item.id));
   const filtered = library.situations.filter(item => (!categoryId || item.categoryId === categoryId)
@@ -89,7 +63,7 @@ export function ContentEditor() {
       <div className="library-backup-actions"><button className="button button-outline" disabled={!ready} onClick={() => fileInput.current?.click()}><FileUp size={15} />Restaurar JSON</button><button className="button button-primary" disabled={!ready} onClick={() => { downloadBackup(library); setNotice("Backup JSON gerado com todo o conteúdo e as revisões."); }}><ArrowDownToLine size={15} />Baixar backup JSON</button><input ref={fileInput} type="file" accept=".json,application/json" onChange={importBackup} aria-label="Arquivo de backup JSON" hidden /></div>
     </div>
     <p className={`library-save-status ${storageBlocked ? "storage-warning" : ""}`} role="status">{saveStatus}</p>
-    <details className="library-instructions"><summary>Como personalizar e revisar este conteúdo</summary><p>Escolha uma situação e um tom. Substitua todos os campos entre colchetes por informações reais antes de utilizar a mensagem. O campo [Descrição do atendimento] pode receber condições, instruções ou um acesso ao material, conforme o contexto. Em consultas online, substitua [Link de agendamento] pelo link real da chamada quando indicado.</p><div className="library-fields">{personalizedFields.map(field => <mark key={field}>[{field}]</mark>)}</div><p>Os textos-base receberam revisão editorial de clareza, neutralidade e finalidade. A checagem automática é limitada: não comprova segurança clínica nem substitui leitura humana. Toda orientação clínica precisa de revisão por nutricionista antes do uso. Em reativações, respeite a autorização e qualquer pedido de não contato.</p><p>Sem login, nuvem ou sincronização entre aparelhos. As alterações ficam somente neste navegador e podem ser perdidas se os dados locais forem apagados. Não insira dados de pacientes. Baixe o JSON para guardar e restaurar seu trabalho. PDF e DOCX pertencem à próxima etapa.</p></details>
+    <details className="library-instructions"><summary>Como personalizar e revisar este conteúdo</summary><p>Escolha uma situação e um tom. Substitua todos os campos entre colchetes por informações reais antes de utilizar a mensagem. O campo [Descrição do atendimento] pode receber condições, instruções ou um acesso ao material, conforme o contexto. Em consultas online, substitua [Link de agendamento] pelo link real da chamada quando indicado.</p><div className="library-fields">{personalizedFields.map(field => <mark key={field}>[{field}]</mark>)}</div><p>Os textos-base receberam revisão editorial de clareza, neutralidade e finalidade. A checagem automática é limitada: não comprova segurança clínica nem substitui leitura humana. Toda orientação clínica precisa de revisão por nutricionista antes do uso. Em reativações, respeite a autorização e qualquer pedido de não contato.</p><p>Sem login, nuvem ou sincronização entre aparelhos. As alterações ficam somente neste navegador e podem ser perdidas se os dados locais forem apagados. Não insira dados de pacientes. Baixe o JSON para guardar e restaurar seu trabalho. PDF e DOCX podem ser gerados em Arquivos finais com todas as edições atuais.</p></details>
     <div className="library-filters"><label><Search size={16} /><span className="sr-only">Buscar no conteúdo</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Buscar situação, campo ou mensagem…" /></label><label><span className="sr-only">Filtrar revisão</span><select value={reviewFilter} onChange={event => setReviewFilter(event.target.value)}><option value="all">Todas as revisões</option><option value="pending">A revisar por você</option><option value="reviewed">Revisadas por você</option><option value="issues">Com alertas automáticos</option></select></label><span>{issues.length === 0 ? "Sem alertas nas checagens automáticas" : `${issues.length} alerta(s) para conferir`}</span></div>
     <div className="library-workspace">
       <aside className="library-index studio-card"><label htmlFor="library-category">Categoria</label><select id="library-category" value={categoryId} onChange={event => setCategoryId(event.target.value)}><option value="">Todas as categorias</option>{libraryCategories.map(category => <option key={category.id} value={category.id}>{category.id} · {category.name} (8)</option>)}</select><p>{filtered.length} situação(ões) nesta seleção</p><nav aria-label="Situações da biblioteca">{filtered.map(item => <button key={item.id} className={selected?.id === item.id ? "active" : ""} aria-current={selected?.id === item.id ? "true" : undefined} onClick={() => setSelectedId(item.id)}><span>{item.id}{library.reviewedIds.includes(item.id) && <CheckCircle2 size={13} aria-label="Revisada" />}{issueIds.has(item.id) && <span aria-label="Com alerta">!</span>}</span><strong>{item.title || "Título a preencher"}</strong></button>)}</nav></aside>

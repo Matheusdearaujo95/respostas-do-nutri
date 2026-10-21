@@ -15,7 +15,10 @@ describe("Estúdio editorial — aprovação visual", () => {
   it("preserva a capa e distingue amostra de produto final", () => {
     renderPreview();
     expect(screen.getByRole("heading", { name: "Identidade que conversa." })).toBeInTheDocument();
-    expect(screen.getByLabelText("Prévia da capa A4")).toBeInTheDocument();
+    const cover = screen.getByLabelText("Prévia da capa A4");
+    expect(cover).toBeInTheDocument();
+    expect(cover.textContent).not.toMatch(/240|80|\d+\s*mensagens/i);
+    expect(cover).toHaveTextContent("Mensagens para facilitar sua comunicação com pacientes.");
     expect(screen.getByText("Amostra visual · não é um PDF exportado")).toBeInTheDocument();
   });
 
