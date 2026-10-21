@@ -1,0 +1,15 @@
+{
+  "name": "Respostas do Nutri",
+  "short_name": "Respostas",
+  "description": "Mensagens prontas, editáveis e organizadas para nutricionistas.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF9F3",
+  "theme_color": "#FAF9F3",
+  "icons": [
+    { "src": "/brand/respostas-do-nutri-icone.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/brand/icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/brand/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

@@ -8,29 +8,29 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
+import { SearchX } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AppShell } from "../components/app/AppShell";
+import { EmptyState } from "../components/app/Common";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
+    <div className="page page--narrow">
+      <EmptyState
+        icon={SearchX}
+        title="Página não encontrada"
+        action={
+          <Link to="/" className="btn btn--primary">
+            Voltar ao início
           </Link>
-        </div>
-      </div>
+        }
+      >
+        O endereço pode ter mudado ou a mensagem foi excluída. Você pode buscar outra mensagem na
+        biblioteca.
+      </EmptyState>
     </div>
   );
 }
@@ -43,29 +43,34 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+    <div className="page page--narrow">
+      <div className="empty">
+        <h3>Algo não carregou como deveria</h3>
+        <p>
+          Tente novamente. Suas favoritas, seu perfil e suas mensagens continuam salvos neste
+          aparelho.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            justifyContent: "center",
+            flexWrap: "wrap",
+            marginTop: 16,
+          }}
+        >
           <button
+            type="button"
+            className="btn btn--primary"
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Tentar novamente
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
+          <a href="/" className="btn btn--secondary">
+            Ir para o início
           </a>
         </div>
       </div>
@@ -77,28 +82,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Respostas prontas da Nutri · Estúdio editorial" },
-      { name: "description", content: "Estúdio interno de produção editorial do guia Respostas prontas da Nutri. Identidade visual e diagramação para aprovação." },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "Respostas do Nutri" },
+      {
+        name: "description",
+        content:
+          "Mensagens prontas, editáveis e organizadas para nutricionistas: encontre, personalize e copie em segundos.",
+      },
       { name: "robots", content: "noindex, nofollow" },
-      { property: "og:title", content: "Respostas prontas da Nutri · Estúdio editorial" },
-      { property: "og:description", content: "Uma direção visual para aproximar, organizar e cuidar." },
+      { name: "theme-color", content: "#FAF9F3" },
+      { name: "color-scheme", content: "light" },
+      { property: "og:title", content: "Respostas do Nutri" },
+      { property: "og:description", content: "Suas mensagens prontas, em um só lugar." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap",
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/brand/respostas-do-nutri-icone.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", href: "/brand/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -126,8 +129,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AppShell>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </AppShell>
     </QueryClientProvider>
   );
 }

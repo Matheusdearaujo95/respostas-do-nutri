@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as BibliotecaRouteImport } from './routes/biblioteca'
+import { Route as FavoritasRouteImport } from './routes/favoritas'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
+import { Route as MinhasIndexRouteImport } from './routes/minhas.index'
+import { Route as MinhasIdRouteImport } from './routes/minhas.$id'
+import { Route as MinhasNovaRouteImport } from './routes/minhas.nova'
+import { Route as MensagemIdIndexRouteImport } from './routes/mensagem.$id.index'
+import { Route as MensagemIdEditarRouteImport } from './routes/mensagem.$id.editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BibliotecaRoute = BibliotecaRouteImport.update({
+  id: '/biblioteca',
+  path: '/biblioteca',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritasRoute = FavoritasRouteImport.update({
+  id: '/favoritas',
+  path: '/favoritas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhasIndexRoute = MinhasIndexRouteImport.update({
+  id: '/minhas/',
+  path: '/minhas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhasIdRoute = MinhasIdRouteImport.update({
+  id: '/minhas/$id',
+  path: '/minhas/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhasNovaRoute = MinhasNovaRouteImport.update({
+  id: '/minhas/nova',
+  path: '/minhas/nova',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MensagemIdIndexRoute = MensagemIdIndexRouteImport.update({
+  id: '/mensagem/$id/',
+  path: '/mensagem/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MensagemIdEditarRoute = MensagemIdEditarRouteImport.update({
+  id: '/mensagem/$id/editar',
+  path: '/mensagem/$id/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/biblioteca': typeof BibliotecaRoute
+  '/favoritas': typeof FavoritasRoute
+  '/perfil': typeof PerfilRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/minhas/$id': typeof MinhasIdRoute
+  '/minhas/nova': typeof MinhasNovaRoute
+  '/minhas/': typeof MinhasIndexRoute
+  '/mensagem/$id/editar': typeof MensagemIdEditarRoute
+  '/mensagem/$id/': typeof MensagemIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/biblioteca': typeof BibliotecaRoute
+  '/favoritas': typeof FavoritasRoute
+  '/perfil': typeof PerfilRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/minhas/$id': typeof MinhasIdRoute
+  '/minhas/nova': typeof MinhasNovaRoute
+  '/minhas': typeof MinhasIndexRoute
+  '/mensagem/$id/editar': typeof MensagemIdEditarRoute
+  '/mensagem/$id': typeof MensagemIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/biblioteca': typeof BibliotecaRoute
+  '/favoritas': typeof FavoritasRoute
+  '/perfil': typeof PerfilRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/minhas/$id': typeof MinhasIdRoute
+  '/minhas/nova': typeof MinhasNovaRoute
+  '/minhas/': typeof MinhasIndexRoute
+  '/mensagem/$id/editar': typeof MensagemIdEditarRoute
+  '/mensagem/$id/': typeof MensagemIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ajuda'
+    | '/biblioteca'
+    | '/favoritas'
+    | '/perfil'
+    | '/categoria/$slug'
+    | '/minhas/$id'
+    | '/minhas/nova'
+    | '/minhas/'
+    | '/mensagem/$id/editar'
+    | '/mensagem/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ajuda'
+    | '/biblioteca'
+    | '/favoritas'
+    | '/perfil'
+    | '/categoria/$slug'
+    | '/minhas/$id'
+    | '/minhas/nova'
+    | '/minhas'
+    | '/mensagem/$id/editar'
+    | '/mensagem/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/ajuda'
+    | '/biblioteca'
+    | '/favoritas'
+    | '/perfil'
+    | '/categoria/$slug'
+    | '/minhas/$id'
+    | '/minhas/nova'
+    | '/minhas/'
+    | '/mensagem/$id/editar'
+    | '/mensagem/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AjudaRoute: typeof AjudaRoute
+  BibliotecaRoute: typeof BibliotecaRoute
+  FavoritasRoute: typeof FavoritasRoute
+  PerfilRoute: typeof PerfilRoute
+  CategoriaSlugRoute: typeof CategoriaSlugRoute
+  MinhasIdRoute: typeof MinhasIdRoute
+  MinhasNovaRoute: typeof MinhasNovaRoute
+  MinhasIndexRoute: typeof MinhasIndexRoute
+  MensagemIdEditarRoute: typeof MensagemIdEditarRoute
+  MensagemIdIndexRoute: typeof MensagemIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/biblioteca': {
+      id: '/biblioteca'
+      path: '/biblioteca'
+      fullPath: '/biblioteca'
+      preLoaderRoute: typeof BibliotecaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritas': {
+      id: '/favoritas'
+      path: '/favoritas'
+      fullPath: '/favoritas'
+      preLoaderRoute: typeof FavoritasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minhas/': {
+      id: '/minhas/'
+      path: '/minhas'
+      fullPath: '/minhas/'
+      preLoaderRoute: typeof MinhasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minhas/$id': {
+      id: '/minhas/$id'
+      path: '/minhas/$id'
+      fullPath: '/minhas/$id'
+      preLoaderRoute: typeof MinhasIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minhas/nova': {
+      id: '/minhas/nova'
+      path: '/minhas/nova'
+      fullPath: '/minhas/nova'
+      preLoaderRoute: typeof MinhasNovaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mensagem/$id/': {
+      id: '/mensagem/$id/'
+      path: '/mensagem/$id'
+      fullPath: '/mensagem/$id/'
+      preLoaderRoute: typeof MensagemIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mensagem/$id/editar': {
+      id: '/mensagem/$id/editar'
+      path: '/mensagem/$id/editar'
+      fullPath: '/mensagem/$id/editar'
+      preLoaderRoute: typeof MensagemIdEditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AjudaRoute: AjudaRoute,
+  BibliotecaRoute: BibliotecaRoute,
+  FavoritasRoute: FavoritasRoute,
+  PerfilRoute: PerfilRoute,
+  CategoriaSlugRoute: CategoriaSlugRoute,
+  MinhasIdRoute: MinhasIdRoute,
+  MinhasNovaRoute: MinhasNovaRoute,
+  MinhasIndexRoute: MinhasIndexRoute,
+  MensagemIdEditarRoute: MensagemIdEditarRoute,
+  MensagemIdIndexRoute: MensagemIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
