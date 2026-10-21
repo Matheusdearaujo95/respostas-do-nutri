@@ -265,8 +265,7 @@ svg { display: inline-block; vertical-align: -2px; }
 .dot { width: 2mm; height: 2mm; border-radius: 99px; background: #e2b400; display: inline-block; }
 
 /* Mensagens */
-.msg { padding: 5mm 0 4mm; border-bottom: 1px solid var(--line2); }
-.msg:last-of-type { border-bottom: none; }
+.msg { break-before: page; padding: 2mm 0 0; }
 .msg__head { break-after: avoid; break-inside: avoid; }
 .msg__meta { font-size: 8.5pt; color: var(--ink3); display: flex; align-items: center; gap: 2mm; }
 .msg__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20pt; line-height: 1.15; margin-top: 2mm; letter-spacing: -.015em; color: var(--apricot-dark); padding-left: 4mm; border-left: 1.4mm solid var(--apricot); }
@@ -304,7 +303,7 @@ const footerLogo = readFileSync(
   join(root, "public/brand/respostas-do-nutri-horizontal.svg"),
   "utf8",
 )
-  .replace(/^<svg /, '<svg style="height:3.6mm;width:auto;display:block;opacity:.6" ')
+  .replace(/^<svg /, '<svg style="height:4mm;width:auto;display:block" ')
   .replace(/ (width|height)="\d+"/g, "");
 const footerTemplate = `
 <div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;font-family:sans-serif;-webkit-print-color-adjust:exact">
