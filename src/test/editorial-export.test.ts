@@ -50,6 +50,7 @@ describe("Arquivos editoriais reais",()=>{
     expect(result.report.messages).toBe(240);
     expect(result.report.situations).toBe(80);
     expect(result.report.minBottomSpace).toBeGreaterThanOrEqual(0);
+    expect(result.report.warnings).toEqual([]);
     const pdf=await PDFDocument.load(result.bytes);
     expect(pdf.getPageCount()).toBe(result.report.pages);
     // A assinatura da Elaine acompanha todas as páginas, sem rasterizar os textos.
@@ -81,6 +82,19 @@ describe("Arquivos editoriais reais",()=>{
       const font=pdf.context.lookup(ref,PDFDict);
       expect(font.has(PDFName.of("ToUnicode"))).toBe(true);
     }
+  },30000);
+  it("permite baixar um PDF de conferência quando a logo falha, sem esconder o aviso",async()=>{
+    localFonts();
+    const fetchLocal = globalThis.fetch;
+    vi.stubGlobal("fetch", (url: string) => String(url).includes("elaine-logo.jpg")
+      ? Promise.resolve({ ok: false })
+      : fetchLocal(url));
+    const result = await generatePdf(createLibrary());
+    expect(result.report.messages).toBe(240);
+    expect(result.report.warnings).toHaveLength(1);
+    expect(result.report.warnings[0]).toContain("sem a imagem");
+    const pdf = await PDFDocument.load(result.bytes);
+    expect(pdf.getPageCount()).toBe(result.report.pages);
   },30000);
   it("recusa caracteres sem suporte e mensagens que não cabem inteiras",async()=>{
     localFonts();

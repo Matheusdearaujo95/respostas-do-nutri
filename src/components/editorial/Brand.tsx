@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { elaineLogoUrl } from "../../lib/editorial/elaine-logo";
+
 type BrandProps = {
   variant?: "main" | "horizontal" | "compact" | "icon";
   className?: string;
@@ -27,7 +30,12 @@ export function Brand({ variant = "main", className = "" }: BrandProps) {
 }
 
 export function ElaineSignature({ className = "" }: { className?: string }) {
-  return <div className={`elaine-signature ${className}`}><img src="/images/elaine-logo.jpg" alt="Monograma da Elaine" width={56} height={56} /><span>Elaine<small>Comunicação com cuidado</small></span></div>;
+  const [failed, setFailed] = useState(false);
+  const [src, setSrc] = useState(elaineLogoUrl);
+  return <div className={`elaine-signature ${className}`}>
+    {failed ? <button type="button" className="elaine-logo-error" onClick={() => { setSrc(`${elaineLogoUrl}&retry=${Date.now()}`); setFailed(false); }}>Logo indisponível. Tentar carregar novamente</button> : <img src={src} alt="Logo da Elaine" width={64} height={64} onError={() => setFailed(true)} />}
+    <span>Elaine<small>Comunicação com cuidado</small></span>
+  </div>;
 }
 
 // Vetor editável; a tipografia permanece texto para atualização futura.

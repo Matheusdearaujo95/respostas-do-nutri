@@ -2,6 +2,7 @@ import { AlignmentType, Bookmark, BorderStyle, Document, Footer, Header, Heading
 import { tones } from "./content";
 import { libraryCategories, personalizedFields, type Library } from "./library";
 import { exportSnapshot, publication } from "./export-model";
+import { loadElaineLogo } from "./elaine-logo";
 
 const green="3F5C39", ink="1D2A1F", muted="5A6552";
 const run=(text:string,bold=false,color=ink,size=24)=>new TextRun({text,bold,color,size,font:"Figtree"});
@@ -12,9 +13,8 @@ const back=()=>new Paragraph({children:[new InternalHyperlink({anchor:"indice",c
 
 export async function generateDocx(source: Library): Promise<Blob> {
   const library=exportSnapshot(source);
-  const logoResponse=await fetch("/images/elaine-logo.jpg");
-  if (!logoResponse.ok) throw new Error("Não foi possível carregar a logo da Elaine. Recarregue e tente novamente.");
-  const logoBytes=new Uint8Array(await logoResponse.arrayBuffer());
+  const logo=await loadElaineLogo();
+  const logoBytes=logo.bytes;
   const children: Paragraph[]=[];
   children.push(new Paragraph({children:[run("ACERVO DO NUTRI / BIBLIOTECA PRÁTICA",false,green,20)],spacing:{after:1000}}));
   children.push(new Paragraph({children:[new TextRun({text:publication.title,font:"Bricolage Grotesque",bold:true,color:green,size:76})],spacing:{after:420}}));
@@ -37,12 +37,12 @@ export async function generateDocx(source: Library): Promise<Blob> {
       for(const tone of tones) {
         children.push(new Paragraph({children:[run(`MENSAGEM ${tone.id} / ${tone.label}`,true,green,22)],keepNext:true,spacing:{before:240,after:120}}));
         const parts=item.messages[tone.id].split(/(\[[^\]]+\]|\r?\n)/g);
-        children.push(new Paragraph({children:parts.filter(Boolean).map(part=>part.includes("\n")?new TextRun({break:1}):part.startsWith("[")?new TextRun({text:part,bold:true,color:"613D14",font:"Figtree",size:24,shading:{type:ShadingType.CLEAR,fill:"F7D887"}}):run(part)),keepLines:true,spacing:{after:200,line:320},indent:{left:160,right:160},shading:{type:ShadingType.CLEAR,fill:tone.id === "A"?"EBF0E2":tone.id === "B"?"FCE7D8":"FAF0CD"},border:{left:{style:BorderStyle.SINGLE,color:tone.id === "B"?"E8562F":green,size:14,space:10}}}));
+        children.push(new Paragraph({children:parts.filter(Boolean).map(part=>part.includes("\n")?new TextRun({break:1}):part.startsWith("[")?new TextRun({text:part,bold:true,color:green,font:"Figtree",size:24,shading:{type:ShadingType.CLEAR,fill:"DBE9D0"}}):run(part)),keepLines:true,spacing:{after:200,line:320},indent:{left:160,right:160},shading:{type:ShadingType.CLEAR,fill:"EBF0E2"},border:{left:{style:BorderStyle.SINGLE,color:green,size:14,space:10}}}));
       }
       children.push(back());
     }
   }
   children.push(pageBreak(),heading("Até a próxima conversa",HeadingLevel.HEADING_1),paragraph(publication.closing),paragraph("Orientações clínicas exigem revisão por nutricionista. Respeite a privacidade e qualquer pedido de não contato."),back());
-  const doc=new Document({title:publication.title,subject:publication.subtitle,creator:"Acervo do Nutri",description:"80 situações e 240 mensagens editáveis",features:{updateFields:true},styles:{default:{document:{run:{font:"Figtree",size:24,color:ink},paragraph:{spacing:{after:160}}},heading1:{run:{font:"Bricolage Grotesque",size:40,bold:true,color:green}},heading2:{run:{font:"Bricolage Grotesque",size:30,bold:true,color:green}}}},sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},headers:{default:new Header({children:[new Paragraph({children:[run(publication.title,false,muted,18)]})]})},footers:{default:new Footer({children:[new Paragraph({alignment:AlignmentType.RIGHT,children:[new ImageRun({type:"jpg",data:logoBytes,transformation:{width:36,height:36},altText:{title:"Logo da Elaine",description:"Monograma da Elaine",name:"Elaine"}}),run("  Elaine · Respostas prontas da Nutri · ",false,muted,18),new TextRun({children:[PageNumber.CURRENT],size:18,color:muted})]})]})},children:[...beforeToc,pageBreak(),toc,...children]}]});
+  const doc=new Document({title:publication.title,subject:publication.subtitle,creator:"Acervo do Nutri",description:"80 situações e 240 mensagens editáveis",features:{updateFields:true},styles:{default:{document:{run:{font:"Figtree",size:24,color:ink},paragraph:{spacing:{after:160}}},heading1:{run:{font:"Bricolage Grotesque",size:40,bold:true,color:green}},heading2:{run:{font:"Bricolage Grotesque",size:30,bold:true,color:green}}}},sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},headers:{default:new Header({children:[new Paragraph({children:[run(publication.title,false,muted,18)]})]})},footers:{default:new Footer({children:[new Paragraph({alignment:AlignmentType.RIGHT,children:[new ImageRun({type:logo.format,data:logoBytes,transformation:{width:48,height:48},altText:{title:"Logo da Elaine",description:"Monograma da Elaine",name:"Elaine"}}),run("  Elaine · Respostas prontas da Nutri · ",false,muted,18),new TextRun({children:[PageNumber.CURRENT],size:18,color:muted})]})]})},children:[...beforeToc,pageBreak(),toc,...children]}]});
   return Packer.toBlob(doc);
 }

@@ -10,7 +10,6 @@ export function CoverPage() {
   return (
     <article className="editorial-paper cover-paper" aria-label="Prévia da capa A4">
       <div className="cover-top"><span>ACERVO DO NUTRI</span><span>GUIA DE COMUNICAÇÃO</span></div>
-      <div className="cover-conversations" aria-hidden="true"><span>Olá, [Nome]!</span><span>Vamos conversar?</span><span>Cuidar começa aqui.</span></div>
       <div className="cover-content">
         <ProductIcon className="cover-symbol" />
         <div className="cover-eyebrow">MENOS TEMPO ESCREVENDO. MAIS TEMPO CUIDANDO.</div>
