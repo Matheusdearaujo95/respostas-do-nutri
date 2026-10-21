@@ -4,7 +4,17 @@ Biblioteca de mensagens prontas, editáveis e organizadas para nutricionistas. C
 
 A nutricionista escolhe o momento do atendimento, encontra a mensagem, preenche o nome do paciente e copia com um toque. Sem IA em tempo real, sem envio automático e sem guardar dados de pacientes.
 
-## Rodar localmente
+## Gerar o PDF (produto vendido na Hotmart)
+
+```sh
+bun install
+bunx playwright-core install chromium   # só na primeira vez
+bun run pdf                             # gera saida/respostas-do-nutri.pdf
+```
+
+O PDF sai com capa, "Como usar", sumário clicável, índice por categoria, atalhos de voltar em cada mensagem, índice alfabético por situação e marcadores para a barra lateral do leitor. Ele é gerado a partir dos mesmos arquivos de `conteudo/`, então basta editar uma mensagem e rodar de novo. Use `bun run pdf -- --html` para guardar também o HTML intermediário. Se já tiver o Chrome instalado, dá para usar `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" bun run pdf`.
+
+## Rodar o app web localmente
 
 ```sh
 bun install   # ou npm install
