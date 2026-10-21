@@ -70,34 +70,16 @@ const backLinks = (category: Category) => `
     <a href="#indice">${icon(ArrowUp, 12)} Índice por situação</a>
   </nav>`;
 
-const coverBubbles = [
-  { side: "in", text: "Oi! Gostaria de saber como funciona o atendimento." },
-  {
-    side: "out",
-    text: "Oi, [Nome]! Que bom receber sua mensagem. Vou explicar tudo com calma por aqui.",
-  },
-  { side: "in", text: "Perfeito! Já vou separar meus horários." },
-];
-
 const cover = `
 <section class="cover">
   <span class="cover__blob cover__blob--a"></span>
   <span class="cover__blob cover__blob--b"></span>
   <p class="eyebrow cover__eyebrow">Acervo do Nutri · Biblioteca prática</p>
-  <img class="cover__logo" src="${file("public/brand/respostas-do-nutri-simbolo.svg")}" alt="">
-  <p class="cover__title">Respostas <em>do Nutri</em><i>.</i></p>
-  <p class="cover__lead">Suas mensagens prontas, em um só lugar. Encontre a mensagem certa, personalize e envie em segundos.</p>
-  <div class="cover__chat">
-    ${coverBubbles
-      .map(
-        (bubble) =>
-          `<p class="cover__bubble cover__bubble--${bubble.side}">${messageText(bubble.text).replace(/<\/?p>/g, "")}</p>`,
-      )
-      .join("")}
+  <div class="cover__main">
+    <img class="cover__logo" src="${file("public/brand/respostas-do-nutri-simbolo.svg")}" alt="">
+    <p class="cover__title">Respostas <em>do Nutri</em><i>.</i></p>
+    <p class="cover__lead">Suas mensagens prontas, em um só lugar. Encontre a mensagem certa, personalize e envie em segundos.</p>
   </div>
-  <ul class="cover__moments">
-    ${categories.map((category) => `<li>${icon(category.icon, 12)} ${esc(category.short)}</li>`).join("")}
-  </ul>
   <img class="cover__elaine" src="${file("public/brand/elaine-araujo-nutricionista.svg")}" alt="Elaine Araújo, nutricionista">
 </section>`;
 
@@ -238,20 +220,13 @@ svg { display: inline-block; vertical-align: -2px; }
 .cover__blob--a { width: 150mm; height: 150mm; right: -60mm; top: -55mm; background: var(--olive-tint); }
 .cover__blob--b { width: 90mm; height: 90mm; left: -40mm; bottom: 40mm; background: var(--apricot-tint); opacity: .7; }
 .cover > *:not(.cover__blob) { position: relative; }
-.cover__logo { width: 30mm; margin-top: 12mm; }
-.cover__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 50pt; line-height: 1; letter-spacing: -.03em; margin-top: 7mm; }
+.cover__logo { width: 34mm; }
+.cover__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 50pt; line-height: 1; letter-spacing: -.03em; margin-top: 8mm; white-space: nowrap; }
 .cover__title em { font-style: normal; color: var(--olive); }
 .cover__title i { font-style: normal; color: var(--apricot); }
 .cover__lead { font-size: 13pt; color: var(--ink2); max-width: 125mm; margin-top: 5mm; }
-.cover__chat { width: 128mm; margin-top: 11mm; padding: 7mm 7mm 6mm; background: var(--panel); border: 1px solid var(--olive-line); border-radius: 7mm; box-shadow: 0 3mm 8mm rgba(44,65,40,.08); display: flex; flex-direction: column; gap: 3mm; text-align: left; }
-.cover__bubble { max-width: 82%; padding: 2.6mm 4mm; font-size: 10pt; line-height: 1.45; }
-.cover__bubble--in { align-self: flex-start; background: var(--bg); border: 1px solid var(--line2); border-radius: 1.5mm 4.5mm 4.5mm 4.5mm; }
-.cover__bubble--out { align-self: flex-end; background: var(--olive); color: #fff; border-radius: 4.5mm 1.5mm 4.5mm 4.5mm; }
-.cover__bubble--out .f { background: rgba(255,255,255,.18); color: #fff; }
-.cover__moments { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 2mm; max-width: 150mm; margin-top: 11mm; }
-.cover__moments li { display: inline-flex; align-items: center; gap: 1.2mm; font-size: 8.5pt; font-weight: 600; color: var(--olive-deep); background: var(--panel); border: 1px solid var(--olive-line); border-radius: 99px; padding: 1.2mm 3mm; }
-.cover__moments svg { color: var(--apricot); vertical-align: 0; }
-.cover__elaine { width: 24mm; margin-top: auto; }
+.cover__main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 10mm; }
+.cover__elaine { width: 24mm; }
 
 /* Como usar */
 .steps { counter-reset: s; list-style: none; margin-top: 10mm; display: grid; gap: 4mm; }
@@ -324,16 +299,20 @@ const executablePath =
   (existsSync("/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
     ? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
     : undefined);
-// O rodapé é renderizado à parte pelo Chromium e não carrega arquivos: o símbolo vai embutido.
-const symbol = readFileSync(join(root, "public/brand/respostas-do-nutri-simbolo.svg"), "utf8")
-  .replace(/^<svg /, '<svg style="width:6mm;height:6mm;display:block" ')
-  .replace(/ (width|height)="152"/g, "");
+// O rodapé é renderizado à parte pelo Chromium e não carrega arquivos: a logo vai embutida.
+const footerLogo = readFileSync(
+  join(root, "public/brand/respostas-do-nutri-horizontal.svg"),
+  "utf8",
+)
+  .replace(/^<svg /, '<svg style="height:3.6mm;width:auto;display:block;opacity:.6" ')
+  .replace(/ (width|height)="\d+"/g, "");
 const footerTemplate = `
-<div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;gap:3mm;font-family:sans-serif;-webkit-print-color-adjust:exact">
-  <span style="flex:1;height:0;border-top:.6pt solid #c6d3bc"></span>
-  ${symbol}
-  <span style="min-width:7mm;height:5mm;padding:0 1.6mm;border-radius:99px;background:#e8562f;color:#fff;font-size:7.5pt;font-weight:700;display:flex;align-items:center;justify-content:center" class="pageNumber"></span>
-  <span style="flex:1;height:0;border-top:.6pt solid #c6d3bc"></span>
+<div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;font-family:sans-serif;-webkit-print-color-adjust:exact">
+  <span style="flex:1"></span>
+  ${footerLogo}
+  <span style="flex:1;display:flex;justify-content:flex-end">
+    <span class="pageNumber" style="width:6.4mm;height:6.4mm;border-radius:50%;background:#e8562f;color:#fff;font-size:7.5pt;font-weight:700;display:flex;align-items:center;justify-content:center"></span>
+  </span>
 </div>`;
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
