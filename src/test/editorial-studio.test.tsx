@@ -8,15 +8,19 @@ afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
 describe("Estúdio editorial — aprovação visual", () => {
-  it("apresenta a capa e distingue proposta de produto final", () => {
+  const renderPreview = () => {
     render(<EditorialStudio />);
+    fireEvent.click(screen.getByRole("button", { name: "Visão geral" }));
+  };
+  it("preserva a capa e distingue amostra de produto final", () => {
+    renderPreview();
     expect(screen.getByRole("heading", { name: "Identidade que conversa." })).toBeInTheDocument();
     expect(screen.getByLabelText("Prévia da capa A4")).toBeInTheDocument();
     expect(screen.getByText("Amostra visual · não é um PDF exportado")).toBeInTheDocument();
   });
 
   it("navega da amostra de índice até a situação e volta", () => {
-    render(<EditorialStudio />);
+    renderPreview();
     fireEvent.click(screen.getByRole("tab", { name: "Índice" }));
     fireEvent.click(screen.getByRole("button", { name: /01 Primeiro contato/ }));
     fireEvent.click(screen.getByRole("button", { name: /Conhecer a situação de amostra/ }));
@@ -29,7 +33,7 @@ describe("Estúdio editorial — aprovação visual", () => {
   });
 
   it("registra observações e aprovação apenas no navegador", () => {
-    render(<EditorialStudio />);
+    renderPreview();
     fireEvent.click(screen.getByRole("button", { name: "Anotar ajustes" }));
     fireEvent.change(screen.getByLabelText("O que você gostaria de ajustar?"), { target: { value: "Revisar o tamanho do título." } });
     fireEvent.click(screen.getByRole("button", { name: "Salvar observações" }));
