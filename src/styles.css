@@ -2,6 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 @import "./editorial.css";
+@import "./components/editorial/editorial-refresh.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -85,6 +86,11 @@
   --ring: var(--primary);
   --brand-orange: oklch(0.642 0.186 36);
   --brand-tint: var(--secondary);
+  --brand-sage: oklch(0.907 0.047 139);
+  --brand-peach: oklch(0.944 0.041 49);
+  --brand-honey: oklch(0.950 0.065 89);
+  --brand-field: oklch(0.903 0.100 87);
+  --brand-field-ink: oklch(0.354 0.071 53);
   --brand-deep: oklch(0.350 0.049 139);
   --brand-line: oklch(0.850 0.035 128);
   --brand-shadow: 0 1px 2px oklch(0.271 0.027 147 / 0.04), 0 8px 24px -10px oklch(0.271 0.027 147 / 0.14);

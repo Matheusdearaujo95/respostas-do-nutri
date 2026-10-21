@@ -26,6 +26,10 @@ export function Brand({ variant = "main", className = "" }: BrandProps) {
   );
 }
 
+export function ElaineSignature({ className = "" }: { className?: string }) {
+  return <div className={`elaine-signature ${className}`}><img src="/images/elaine-logo.jpg" alt="Monograma da Elaine" width={56} height={56} /><span>Elaine<small>Comunicação com cuidado</small></span></div>;
+}
+
 // Vetor editável; a tipografia permanece texto para atualização futura.
 export function logoSvg(variant: "main" | "horizontal" | "compact" | "icon") {
   const iconOnly = variant === "icon";

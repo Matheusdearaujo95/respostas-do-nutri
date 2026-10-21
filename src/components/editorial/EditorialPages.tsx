@@ -1,15 +1,16 @@
 import { ArrowUpRight } from "lucide-react";
-import { Brand, ProductIcon } from "./Brand";
+import { Brand, ElaineSignature, ProductIcon } from "./Brand";
 import { categories, identity, sampleSituation, type PreviewPage } from "../../lib/editorial/identity";
 
 function PageFooter({ number, onIndex }: { number: string; onIndex: () => void }) {
-  return <footer className="paper-footer"><span>Respostas prontas da Nutri</span><button onClick={onIndex}>Voltar ao índice ↗</button><span>{number}</span></footer>;
+  return <footer className="paper-footer"><ElaineSignature /><button onClick={onIndex}>Voltar ao índice ↗</button><span>{number}</span></footer>;
 }
 
 export function CoverPage() {
   return (
     <article className="editorial-paper cover-paper" aria-label="Prévia da capa A4">
       <div className="cover-top"><span>ACERVO DO NUTRI</span><span>GUIA DE COMUNICAÇÃO</span></div>
+      <div className="cover-conversations" aria-hidden="true"><span>Olá, [Nome]!</span><span>Vamos conversar?</span><span>Cuidar começa aqui.</span></div>
       <div className="cover-content">
         <ProductIcon className="cover-symbol" />
         <div className="cover-eyebrow">MENOS TEMPO ESCREVENDO. MAIS TEMPO CUIDANDO.</div>
@@ -17,7 +18,7 @@ export function CoverPage() {
         <div className="cover-rule" />
         <p>{identity.subtitle}</p>
       </div>
-      <div className="cover-bottom"><div><strong>Palavras que aproximam.</strong><span>Um cuidado que começa na conversa.</span></div></div>
+      <div className="cover-bottom"><div><strong>Palavras que aproximam.</strong><span>Um cuidado que começa na conversa.</span></div><ElaineSignature /></div>
     </article>
   );
 }

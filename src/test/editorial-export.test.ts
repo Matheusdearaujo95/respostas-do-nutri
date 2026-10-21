@@ -13,7 +13,9 @@ afterEach(() => vi.unstubAllGlobals());
 function localFonts() {
   vi.stubGlobal("fetch", async (url: string) => {
     const name=String(url).includes("bricolage") ? "@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-700-normal.woff" : "@fontsource/figtree/files/figtree-latin-400-normal.woff";
-    const bytes=await readFile(require.resolve(name));
+    const bytes=String(url).includes("elaine-logo.jpg")
+      ? await readFile(new URL("../../public/images/elaine-logo.jpg", import.meta.url))
+      : await readFile(require.resolve(name));
     return {ok:true,arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)};
   });
 }
@@ -50,6 +52,11 @@ describe("Arquivos editoriais reais",()=>{
     expect(result.report.minBottomSpace).toBeGreaterThanOrEqual(0);
     const pdf=await PDFDocument.load(result.bytes);
     expect(pdf.getPageCount()).toBe(result.report.pages);
+    // A assinatura da Elaine acompanha todas as páginas, sem rasterizar os textos.
+    for (const page of pdf.getPages()) {
+      const images = page.node.Resources()!.lookup(PDFName.of("XObject"), PDFDict);
+      expect(images.entries().some(([, ref]) => pdf.context.lookup(ref, PDFDict).get(PDFName.of("Subtype"))?.toString() === "/Image")).toBe(true);
+    }
     expect(pdf.getPageCount()).toBeGreaterThanOrEqual(95);
     expect(pdf.getPage(0).getWidth()).toBeCloseTo(595.28);
     expect(pdf.getPage(0).getHeight()).toBeCloseTo(841.89);
@@ -83,6 +90,7 @@ describe("Arquivos editoriais reais",()=>{
     await expect(generatePdf(library)).rejects.toThrow(/não cabe/);
   },30000);
   it("produz DOCX ZIP com todos os textos, acentos, âncoras e estilos",async()=>{
+    localFonts();
     const library=createLibrary();
     const blob=await generateDocx(library);
     const bytes=new Uint8Array(await blob.arrayBuffer());
