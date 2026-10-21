@@ -199,14 +199,14 @@ const css = `
 :root {
   --bg: #faf9f3; --panel: #fff; --ink: #1d2a1f; --ink2: #5a6552; --ink3: #7d8777;
   --olive: #3f5c39; --olive-deep: #2c4128; --olive-tint: #ebf0e2; --olive-line: #c6d3bc;
-  --apricot: #e8562f; --apricot-dark: #c74320; --apricot-tint: #fbe8e1; --line2: rgba(29,42,31,.1);
+  --apricot: #e8562f; --apricot-dark: #c74320; --apricot-tint: #fbe8e1; --line2: #e4e6df;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { font-family: "Figtree", sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; }
 a { color: inherit; text-decoration: none; }
 b { font-weight: 700; }
-.page { break-after: page; }
+.page { break-before: page; break-after: page; }
 .eyebrow { font-size: 8pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--olive); }
 .h2 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 24pt; line-height: 1.1; letter-spacing: -.015em; margin-top: 4pt; }
 .lead { color: var(--ink2); margin-top: 6pt; font-size: 11pt; }
@@ -218,7 +218,7 @@ svg { display: inline-block; vertical-align: -2px; }
 .cover { height: 297mm; break-after: page; position: relative; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22mm 24mm 16mm; }
 .cover__blob { position: absolute; border-radius: 50%; }
 .cover__blob--a { width: 150mm; height: 150mm; right: -60mm; top: -55mm; background: var(--olive-tint); }
-.cover__blob--b { width: 90mm; height: 90mm; left: -40mm; bottom: 40mm; background: var(--apricot-tint); opacity: .7; }
+.cover__blob--b { width: 90mm; height: 90mm; left: -40mm; bottom: 40mm; background: #fcefe9; }
 .cover > *:not(.cover__blob) { position: relative; }
 .cover__logo { width: 34mm; }
 .cover__title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 50pt; line-height: 1; letter-spacing: -.03em; margin-top: 8mm; white-space: nowrap; }
@@ -251,16 +251,16 @@ svg { display: inline-block; vertical-align: -2px; }
 .toc__item--index .toc__icon { background: var(--apricot-tint); color: var(--apricot-dark); }
 
 /* Abertura de categoria */
-.cat-head { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10mm 12mm 9mm; border-radius: 6mm; background: var(--olive-tint); border: 1px solid var(--olive-line); }
+.cat-head { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 7mm 12mm 6mm; border-radius: 6mm; background: var(--olive-tint); border: 1px solid var(--olive-line); }
 .cat-head > *:not(.cat-head__num) { position: relative; }
-.cat-head__num { position: absolute; right: 7mm; top: 4mm; font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 64pt; line-height: 1; color: #fff; opacity: .9; }
-.cat-head__icon { width: 21mm; height: 21mm; border-radius: 50%; background: var(--panel); color: var(--olive); display: grid; place-items: center; margin-bottom: 5mm; box-shadow: 0 0 0 2.5mm rgba(255,255,255,.5); }
+.cat-head__num { position: absolute; right: 7mm; top: 5mm; font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 40pt; line-height: 1; letter-spacing: -.02em; color: var(--apricot); padding-bottom: 1.5mm; border-bottom: 1.2mm solid var(--apricot); }
+.cat-head__icon { width: 18mm; height: 18mm; border-radius: 50%; background: var(--panel); color: var(--olive); display: grid; place-items: center; margin-bottom: 4mm; box-shadow: 0 0 0 2.5mm #f5f7f0; }
 .cat-head__icon::after { content: ""; position: absolute; right: .6mm; top: .6mm; width: 4mm; height: 4mm; border-radius: 50%; background: var(--apricot); border: 1mm solid var(--olive-tint); }
-.cat-head__rule { width: 12mm; height: 1.2mm; border-radius: 99px; background: var(--apricot); margin-top: 4mm; }
-.cat-head .lead { max-width: 130mm; margin-top: 4mm; }
-.cat-index { list-style: none; margin-top: 7mm; columns: 1; }
+.cat-head__rule { width: 12mm; height: 1.2mm; border-radius: 99px; background: var(--apricot); margin-top: 3mm; }
+.cat-head .lead { max-width: 130mm; margin-top: 3mm; }
+.cat-index { list-style: none; margin-top: 5mm; }
 .cat-index li { border-bottom: 1px solid var(--line2); }
-.cat-index a { display: flex; align-items: center; gap: 3mm; padding: 2.6mm 1mm; font-weight: 600; }
+.cat-index a { display: flex; align-items: center; gap: 3mm; padding: 1.45mm 1mm; font-weight: 600; font-size: 10pt; }
 .cat-index .id, .msg__meta .id { font-variant-numeric: tabular-nums; color: var(--olive); font-weight: 700; font-size: 8.5pt; background: var(--olive-tint); border-radius: 1.2mm; padding: .3mm 1.6mm; }
 .dot { width: 2mm; height: 2mm; border-radius: 99px; background: #e2b400; display: inline-block; }
 
@@ -276,7 +276,7 @@ svg { display: inline-block; vertical-align: -2px; }
 .bubble p + p { margin-top: 2.2mm; }
 .back { break-before: avoid; display: flex; gap: 2mm; flex-wrap: wrap; margin-top: 4mm; }
 .back a { display: inline-flex; align-items: center; gap: 1mm; font-size: 8pt; font-weight: 700; color: var(--olive-deep); border: 1px solid var(--olive-line); border-radius: 99px; padding: 1mm 3mm; background: var(--panel); }
-.back--solo { margin-top: 8mm; }
+.back--solo { margin-top: 5mm; }
 
 /* Índice alfabético */
 .az { list-style: none; columns: 2; column-gap: 8mm; margin-top: 7mm; }
@@ -298,21 +298,14 @@ const executablePath =
   (existsSync("/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
     ? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
     : undefined);
-// O rodapé é renderizado à parte pelo Chromium e não carrega arquivos: a logo vai embutida.
-const footerLogo = readFileSync(
-  join(root, "public/brand/respostas-do-nutri-horizontal.svg"),
-  "utf8",
-)
-  .replace(/^<svg /, '<svg style="height:4.8mm;width:auto;display:block" ')
-  .replace(/ (width|height)="\d+"/g, "");
+// O rodapé do Chromium repete o SVG inteiro em cada página (PDF pesado e lento para navegar).
+// Por isso ele traz só o número; a logo entra depois, uma única vez, como objeto reutilizado.
 const footerTemplate = `
-<div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;font-family:sans-serif;-webkit-print-color-adjust:exact">
-  <span style="flex:1"></span>
-  ${footerLogo}
-  <span style="flex:1;display:flex;justify-content:flex-end">
-    <span class="pageNumber" style="width:6.4mm;height:6.4mm;border-radius:50%;background:#e8562f;color:#fff;font-size:7.5pt;font-weight:700;display:flex;align-items:center;justify-content:center"></span>
-  </span>
+<div style="width:100%;padding:0 16mm 1mm;display:flex;justify-content:flex-end;font-family:sans-serif;-webkit-print-color-adjust:exact">
+  <span class="pageNumber" style="width:6.4mm;height:6.4mm;border-radius:50%;background:#e8562f;color:#fff;font-size:7.5pt;font-weight:700;display:flex;align-items:center;justify-content:center"></span>
 </div>`;
+const footerLogoHeight = 4.8; // mm
+const footerLogoWidth = (footerLogoHeight * 1046) / 155;
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const page = await browser.newPage();
@@ -330,10 +323,32 @@ await page.pdf({
   footerTemplate,
   margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" },
 });
+const logoPage = await browser.newPage();
+await logoPage.setContent(
+  `<style>@page{margin:0}html,body{margin:0}img{display:block;width:${footerLogoWidth}mm;height:${footerLogoHeight}mm}</style><img src="data:image/svg+xml;base64,${readFileSync(join(root, "public/brand/respostas-do-nutri-horizontal.svg")).toString("base64")}">`,
+);
+const logoPdf = await logoPage.pdf({
+  width: `${footerLogoWidth}mm`,
+  height: `${footerLogoHeight}mm`,
+  printBackground: true,
+  pageRanges: "1",
+});
 await browser.close();
 
-// O Chromium põe o rodapé em todas as páginas; na capa ele é coberto com a cor de fundo.
+const mm = 72 / 25.4;
 const pdf = await PDFDocument.load(readFileSync(pdfPath));
+const [logo] = await pdf.embedPdf(logoPdf);
+pdf.getPages().forEach((current, i) => {
+  if (i === 0 || !logo) return;
+  current.drawPage(logo, {
+    x: (current.getWidth() - footerLogoWidth * mm) / 2,
+    y: (9.1 - footerLogoHeight / 2) * mm,
+    width: footerLogoWidth * mm,
+    height: footerLogoHeight * mm,
+  });
+});
+
+// O Chromium põe o número em todas as páginas; na capa ele é coberto com a cor de fundo.
 const coverPage = pdf.getPage(0);
 coverPage.drawRectangle({
   x: 0,
@@ -342,6 +357,6 @@ coverPage.drawRectangle({
   height: 38,
   color: rgb(0xfa / 255, 0xf9 / 255, 0xf3 / 255),
 });
-writeFileSync(pdfPath, await pdf.save({ useObjectStreams: false }));
+writeFileSync(pdfPath, await pdf.save({ useObjectStreams: true }));
 if (!keepHtml) unlinkSync(htmlPath);
 console.log(`PDF gerado: ${pdfPath} (${messages.length} mensagens)`);
