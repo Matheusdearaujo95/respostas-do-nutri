@@ -303,7 +303,7 @@ const footerLogo = readFileSync(
   join(root, "public/brand/respostas-do-nutri-horizontal.svg"),
   "utf8",
 )
-  .replace(/^<svg /, '<svg style="height:4mm;width:auto;display:block" ')
+  .replace(/^<svg /, '<svg style="height:4.8mm;width:auto;display:block" ')
   .replace(/ (width|height)="\d+"/g, "");
 const footerTemplate = `
 <div style="width:100%;padding:0 16mm 1mm;display:flex;align-items:center;font-family:sans-serif;-webkit-print-color-adjust:exact">
